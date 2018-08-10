@@ -32,16 +32,16 @@
 # netfpga_base_beta_2_0_0/NF2 is the top-level directory of the 
 # NetFPGA-beta archive.
 #
-BITDIR=		NetFPGA/bitfiles
+BITDIR := NetFPGA/bitfiles
 
-CFLAGS+=	-O0 -g -ggdb -Wall -Wextra
+CFLAGS ?= -O0 -g -ggdb -Wall -Wextra
 
-CFLAGS+=	-DXBF_TEST_PROG
+SRC := xbf.c contrib/strlcat.c
 
-all:	regen xbf
+all: regen xbf
 
-xbf:	xbf.c contrib/strlcat.c Makefile
-	$(CC) $(CFLAGS) xbf.c contrib/strlcat.c -o xbf
+xbf: $(SRC)
+	$(CC) $(CFLAGS) -DXBF_TEST_PROG $^ -o $@
 
 rtest:
 	./xbf -d /tmp/_.xbf_tests -r all
@@ -49,7 +49,7 @@ rtest:
 fetch:
 	git clone https://github.com/insop/NetFPGA.git
 
-test:	xbf rtest
+test: xbf rtest
 	rm -rf tests/libxbf.out
 	./xbf $(BITDIR)/cpci.bit >> tests/libxbf.out
 	./xbf $(BITDIR)/cpci_reprogrammer.bit >> tests/libxbf.out
@@ -78,4 +78,6 @@ testman:
 
 clean:
 	rm -rf xbf tests/libxbf.out xbf.dSYM
+
+.PHONY: all rtest fetch test regen testman clean
 
