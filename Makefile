@@ -34,14 +34,26 @@
 #
 BITDIR := NetFPGA/bitfiles
 
+prefix ?= /usr/local
+includedir ?= $(prefix)/include
+libdir ?= $(prefix)/lib
+bindir ?= $(prefix)/bin
+
+INSTALL := install -D
+INSTALL_DATA := $(INSTALL) -m 644
+INSTALL_PROGRAM := $(INSTALL)
+
 CFLAGS ?= -O0 -g -ggdb -Wall -Wextra
 
 SRC := xbf.c contrib/strlcat.c
 
-all: regen xbf
+all: regen xbf libxbf.so
 
 xbf: $(SRC)
 	$(CC) $(CFLAGS) -DXBF_TEST_PROG $^ -o $@
+
+libxbf.so: $(SRC)
+	$(CC) -shared -fPIC $(CFLAGS) $^ -o $@
 
 rtest:
 	./xbf -d /tmp/_.xbf_tests -r all
@@ -76,8 +88,13 @@ regen:
 testman:
 	groff -man -Tascii xbf.3
 
-clean:
-	rm -rf xbf tests/libxbf.out xbf.dSYM
+install: xbf libxbf.so xbf.h
+	$(INSTALL_PROGRAM) xbf $(DESTDIR)$(bindir)/xbf
+	$(INSTALL_PROGRAM) libxbf.so $(DESTDIR)$(libdir)/libxbf.so
+	$(INSTALL_DATA) xbf.h $(DESTDIR)$(includedir)/xbf.h
 
-.PHONY: all rtest fetch test regen testman clean
+clean:
+	rm -rf xbf libxbf.so tests/libxbf.out xbf.dSYM
+
+.PHONY: all rtest fetch test regen testman install clean
 

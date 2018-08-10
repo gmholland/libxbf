@@ -1,3 +1,4 @@
 NetFPGA/*
 xbf
+libxbf.so
 tests/libxbf.out
