@@ -31,6 +31,14 @@
 #ifndef _XBF_H_
 #define _XBF_H_
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+#include <stdint.h>
+#include <stdio.h>
+#include <string.h>
+
 /* Debugging */
 #define ASSERT	assert
 
@@ -127,5 +135,11 @@ int xbf_opened(struct xbf *xbf);
 #ifndef strlcat
 size_t strlcat(char * __restrict dst, const char * __restrict src, size_t siz);
 #endif
+
+#ifdef __cplusplus
+}
+#endif
+
+#undef ASSERT
 
 #endif /* _XBF_H_ */
