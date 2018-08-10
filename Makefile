@@ -96,5 +96,8 @@ install: xbf libxbf.so xbf.h
 clean:
 	rm -rf xbf libxbf.so tests/libxbf.out xbf.dSYM
 
-.PHONY: all rtest fetch test regen testman install clean
+cleanall: clean
+	rm -rf NetFPGA
+
+.PHONY: all rtest fetch test regen testman install clean cleanall
 
