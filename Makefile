@@ -47,13 +47,16 @@ CFLAGS ?= -O0 -g -ggdb -Wall -Wextra
 
 SRC := xbf.c contrib/strlcat.c
 
-all: regen xbf libxbf.so
+all: regen xbf libxbf.so libxbf.pc
 
 xbf: $(SRC)
 	$(CC) $(CFLAGS) -DXBF_TEST_PROG $^ -o $@
 
 libxbf.so: $(SRC)
 	$(CC) -shared -fPIC $(CFLAGS) $^ -o $@
+
+%.pc: %.pc.in
+	sed '1s/@prefix@/$(subst /,\/,$(prefix))/' $< > $@
 
 rtest:
 	./xbf -d /tmp/_.xbf_tests -r all
@@ -88,13 +91,14 @@ regen:
 testman:
 	groff -man -Tascii xbf.3
 
-install: xbf libxbf.so xbf.h
+install: xbf libxbf.so xbf.h libxbf.pc
 	$(INSTALL_PROGRAM) xbf $(DESTDIR)$(bindir)/xbf
 	$(INSTALL_PROGRAM) libxbf.so $(DESTDIR)$(libdir)/libxbf.so
 	$(INSTALL_DATA) xbf.h $(DESTDIR)$(includedir)/xbf.h
+	$(INSTALL_DATA) libxbf.pc $(DESTDIR)$(libdir)/pkgconfig/libxbf.pc
 
 clean:
-	rm -rf xbf libxbf.so tests/libxbf.out xbf.dSYM
+	rm -rf xbf libxbf.so tests/libxbf.out xbf.dSYM libxbf.pc
 
 cleanall: clean
 	rm -rf NetFPGA
